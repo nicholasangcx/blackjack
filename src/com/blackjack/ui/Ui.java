@@ -16,7 +16,7 @@ public class Ui {
     private final PrintStream out;
 
     /** Delimiter to separate bids of different hands */
-    private static final String DELIMITER = ", ";
+    private static final String DELIMITER = " , ";
 
     public Ui() {
         this(System.in, System.out);

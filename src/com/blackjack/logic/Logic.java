@@ -6,6 +6,7 @@ import static com.blackjack.common.Messages.MESSAGE_FIVE_OPTIONS;
 import static com.blackjack.common.Messages.MESSAGE_FOUR_OPTIONS;
 import static com.blackjack.common.Messages.MESSAGE_GOODBYE;
 import static com.blackjack.common.Messages.MESSAGE_INVALID_OPTION;
+import static com.blackjack.common.Messages.MESSAGE_LOST;
 import static com.blackjack.common.Messages.MESSAGE_QUERY_NEW_GAME;
 import static com.blackjack.common.Messages.MESSAGE_SURRENDER;
 import static com.blackjack.common.Messages.MESSAGE_TIE;
@@ -76,28 +77,22 @@ public class Logic {
     }
 
     /**
-     * Execution of the rest of the game, after the initial dealing of cards
+     * Check the dealer's initial hand for a Blackjack since the game ends right away if that is the case.
      * @return true if user wants to continue playing another game.
      */
-    public boolean finishGame() {
-        logicUtil = new LogicUtil(deal, dealer, player, state);
-        handNum = 0;
-        handNumOneIndex = handNum + 1;
+    public boolean processGame() {
+        Hand dealerHand = new Hand(dealer.getCards());
+        Hand playerHand = new Hand(player.getHands().get(0).getCards());
 
-        /** Execution of the game, for each hand */
-        while (handNum <  player.getHands().size()) {
-            hand = player.getHands().get(handNum);
-            currentBid = hand.getCurrentBid();
-            int typeOfHand = processHand(hand);
-            executeMove(typeOfHand);
-            handNum++;
-            handNumOneIndex = handNum + 1;
-        }
-        String result = logicUtil.executeRobot();
-        /** If there is additional information about the outcome of the game not already provided */
-        if (logicUtil.hasNewInfo) {
+        if (dealerHand.isBlackjack()) {
             ui.displayGameState(state.revealDealer(dealer));
-            ui.displayResult(result);
+            if (playerHand.isBlackjack()) {
+                ui.displayResult(MESSAGE_TIE);
+            } else {
+                ui.displayResult(MESSAGE_LOST);
+            }
+        } else {
+            finishGame();
         }
 
         /** Processing whether to start a new game */
@@ -121,6 +116,31 @@ public class Logic {
         } while (!isValidInput);
 
         return false;
+    }
+
+    /**
+     * Execution of the rest of the game, after the initial dealing and processing of cards
+     */
+    private void finishGame() {
+        logicUtil = new LogicUtil(deal, dealer, player, state);
+        handNum = 0;
+        handNumOneIndex = handNum + 1;
+
+        /** Execution of the game, for each hand */
+        while (handNum <  player.getHands().size()) {
+            hand = player.getHands().get(handNum);
+            currentBid = hand.getCurrentBid();
+            int typeOfHand = processHand(hand);
+            executeMove(typeOfHand);
+            handNum++;
+            handNumOneIndex = handNum + 1;
+        }
+        String result = logicUtil.executeRobot();
+        /** If there is additional information about the outcome of the game not already provided */
+        if (logicUtil.hasNewInfo) {
+            ui.displayGameState(state.revealDealer(dealer));
+            ui.displayResult(result);
+        }
     }
 
     /**
@@ -185,24 +205,17 @@ public class Logic {
         }
     }
 
+    /** ========================== Logic for executing different types of hands ============================ */
+
     /**
-     * The case where player has a Blackjack.
+     * The case where player has a Blackjack, and dealer has no Blackjack.
+     * Since we already handled the case for a dealer Blackjack previously.
      */
     private void executeBlackjackHand() {
-        Hand dealerHand = new Hand(dealer.getCards());
-        if (!dealerHand.isBlackjack()) {
-            player.increaseBalance(currentBid * 25/10);
-            player.getHands().get(handNum).clearBid();
-            ui.displayResult(MESSAGE_BLACKJACK);
-            ui.displayBalance(player);
-        }
-        else {
-            player.increaseBalance(currentBid);
-            player.getHands().get(handNum).clearBid();
-            state.updateState(player);
-            ui.displayGameState(state.revealDealer(dealer));
-            ui.displayResult(MESSAGE_TIE);
-        }
+        player.increaseBalance(currentBid * 25/10);
+        player.getHands().get(handNum).clearBid();
+        ui.displayResult(MESSAGE_BLACKJACK);
+        ui.displayBalance(player);
     }
 
     /**
@@ -213,7 +226,6 @@ public class Logic {
         int move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_FIVE_OPTIONS);
 
         boolean isNotValid = false;
-        String result;
 
         // do-while loop to ensure that execution can proceed with a valid input.
         do {
@@ -263,7 +275,6 @@ public class Logic {
         int move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_FOUR_OPTIONS);
 
         boolean isNotValid = false;
-        String result;
 
         // do-while loop to ensure that execution can proceed with a valid input.
         do {

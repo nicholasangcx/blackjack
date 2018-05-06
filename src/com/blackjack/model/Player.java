@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Player {
 
     private static final int STARTING_MONEY = 100;
-    private static final String DELIMITER = " ,";
+    private static final String DELIMITER = ", ";
 
     /** Contains a list of all the hands the player has currently. */
     private ArrayList<Hand> hands;
@@ -78,7 +78,7 @@ public class Player {
     public String getBidsAsString() {
         String result = "";
         for (Hand hand : hands) {
-            result += Integer.toString(hand.getCurrentBid()) + DELIMITER;
+            result += Integer.toString(hand.getCurrentBid()) + " " + DELIMITER;
         }
         // Remove the last delimiter.
         return (result.substring(0, result.length() - 2));

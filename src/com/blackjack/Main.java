@@ -45,7 +45,7 @@ public class Main {
      */
     private boolean executeGame() {
         logic.startGame();
-        return logic.finishGame();
+        return logic.processGame();
     }
 
 }
