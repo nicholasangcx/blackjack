@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 import com.blackjack.model.Hand;
-import com.blackjack.model.Player;
+import com.blackjack.model.gamblers.Player;
 
 /**
  * Handles what is displayed and the interaction between the user and the application

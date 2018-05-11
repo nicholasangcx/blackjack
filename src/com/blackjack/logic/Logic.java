@@ -28,9 +28,9 @@ import com.blackjack.logic.util.LogicUtil;
 import com.blackjack.logic.util.TypeOfHand;
 import com.blackjack.ui.GameState;
 import com.blackjack.ui.Ui;
-import com.blackjack.model.Dealer;
+import com.blackjack.model.gamblers.Dealer;
 import com.blackjack.model.Hand;
-import com.blackjack.model.Player;
+import com.blackjack.model.gamblers.Player;
 
 /**
  * Contains the main logic of the game
@@ -81,7 +81,7 @@ public class Logic {
      * @return true if user wants to continue playing another game.
      */
     public boolean processGame() {
-        Hand dealerHand = new Hand(dealer.getCards());
+        Hand dealerHand = new Hand(dealer.getHands().get(0).getCards());
         Hand playerHand = new Hand(player.getHands().get(0).getCards());
 
         if (ProcessHand.isBlackjack(dealerHand)) {

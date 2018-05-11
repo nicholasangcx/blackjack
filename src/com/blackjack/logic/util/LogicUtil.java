@@ -8,12 +8,11 @@ import java.util.ArrayList;
 
 import com.blackjack.logic.Deal;
 import com.blackjack.logic.DealerRobot;
-import com.blackjack.logic.GameLogic;
 import com.blackjack.logic.ProcessHand;
 import com.blackjack.model.card.Card;
-import com.blackjack.model.Dealer;
+import com.blackjack.model.gamblers.Dealer;
 import com.blackjack.model.Hand;
-import com.blackjack.model.Player;
+import com.blackjack.model.gamblers.Player;
 import com.blackjack.ui.GameState;
 
 /**
@@ -27,9 +26,6 @@ public class LogicUtil {
     public static final int DOUBLE = 3;
     public static final int SURRENDER = 4;
     public static final int SPLIT = 5;
-
-    /** When taking the value of ACE to be 11 causes the hand to just exceed 21 */
-    private static final int VALUE_WITH_ACE_11 = 22;
 
     /** Used to determine if there is previously undisplayed information */
     public boolean hasNewInfo;
@@ -123,7 +119,7 @@ public class LogicUtil {
      */
     public String determineWinner(Dealer dealer, Player player) {
         hasNewInfo = false;
-        ArrayList<Card> dealerCards = dealer.getCards();
+        ArrayList<Card> dealerCards = dealer.getHands().get(0).getCards();
         ArrayList<Hand> playerHands = player.getHands();
 
         String result = "";

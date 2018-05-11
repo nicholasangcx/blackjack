@@ -1,8 +1,8 @@
 package com.blackjack.logic;
 
-import com.blackjack.model.Dealer;
+import com.blackjack.model.gamblers.Dealer;
 import com.blackjack.model.DeckOfCards;
-import com.blackjack.model.Player;
+import com.blackjack.model.gamblers.Player;
 import com.blackjack.ui.GameState;
 
 /**

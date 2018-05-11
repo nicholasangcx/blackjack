@@ -1,14 +1,15 @@
-package com.blackjack.model;
+package com.blackjack.model.gamblers;
 
 import java.util.ArrayList;
 
+import com.blackjack.model.Hand;
 import com.blackjack.model.card.Card;
 
 /**
  * Represents a player in the game of Blackjack, keeping track of his
  * balance cash and hands in the game.
  */
-public class Player {
+public class Player extends Gamblers {
 
     private static final int STARTING_MONEY = 100;
     private static final String DELIMITER = ", ";
@@ -18,24 +19,8 @@ public class Player {
     private int balance;
 
     public Player() {
+        super();
         balance = STARTING_MONEY;
-        hands = new ArrayList<Hand>();
-    }
-
-    /**
-     * This method adds a card to the specified hand of the player (to deal with split hand situations).
-     * @param card the card that is dealt.
-     * @param currentHand the hand that we are adding this card to.
-     */
-    public void addCard(Card card, int currentHand) {
-        // Dealing the cards out at the start
-        if (currentHand == hands.size()) {
-            ArrayList<Card> cards = new ArrayList<Card>();
-            cards.add(card);
-            hands.add(new Hand(cards));
-        } else {
-            hands.get(currentHand).add(card);
-        }
     }
 
     /**
@@ -49,10 +34,6 @@ public class Player {
             cashInBids += hand.getCurrentBid();
         }
         return (balance - cashInBids);
-    }
-
-    public ArrayList<Hand> getHands() {
-        return hands;
     }
 
     /**
@@ -92,13 +73,6 @@ public class Player {
 
     public void decreaseBalance(int amount) {
         balance -= amount;
-    }
-
-    /**
-     * Resets the hand of the player (for a new game).
-     */
-    public void clearHands() {
-        hands = new ArrayList<Hand>();
     }
 
     /**

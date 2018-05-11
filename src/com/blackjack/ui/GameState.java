@@ -1,7 +1,7 @@
 package com.blackjack.ui;
 
-import com.blackjack.model.Dealer;
-import com.blackjack.model.Player;
+import com.blackjack.model.gamblers.Dealer;
+import com.blackjack.model.gamblers.Player;
 
 /**
  * Represents the state of the game, contains all information about the player and dealer's cards,

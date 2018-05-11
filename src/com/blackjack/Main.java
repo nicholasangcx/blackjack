@@ -1,7 +1,7 @@
 package com.blackjack;
 
 import com.blackjack.logic.Logic;
-import com.blackjack.model.Player;
+import com.blackjack.model.gamblers.Player;
 import com.blackjack.ui.Ui;
 
 /**

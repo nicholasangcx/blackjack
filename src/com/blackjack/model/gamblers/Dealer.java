@@ -1,29 +1,26 @@
-package com.blackjack.model;
+package com.blackjack.model.gamblers;
 
 import java.util.ArrayList;
 
+import com.blackjack.model.Hand;
 import com.blackjack.model.card.Card;
 
 /**
  * Represents the dealer in the game of Blackjack
  */
-public class Dealer {
+public class Dealer extends Gamblers {
 
     private static final String CARD_HIDDEN = "X";
 
     /** Only has a list of cards as dealer cannot have multiple hands.*/
-    private ArrayList<Card> cards;
+    private ArrayList<Hand> hands;
 
     public Dealer() {
-        cards = new ArrayList<Card>();
+        super();
     }
 
     public void addCard(Card card) {
-        cards.add(card);
-    }
-
-    public ArrayList<Card> getCards() {
-        return cards;
+        addCard(card, 0);
     }
 
     /**
@@ -32,7 +29,7 @@ public class Dealer {
      */
     public String getHiddenCardsAsString() {
         String result = "";
-        result += cards.get(0).getFace() + " " + CARD_HIDDEN;
+        result += hands.get(0).getCards().get(0).getFace() + " " + CARD_HIDDEN;
         return result;
     }
 
