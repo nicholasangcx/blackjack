@@ -84,9 +84,9 @@ public class Logic {
         Hand dealerHand = new Hand(dealer.getCards());
         Hand playerHand = new Hand(player.getHands().get(0).getCards());
 
-        if (dealerHand.isBlackjack()) {
+        if (ProcessHand.isBlackjack(dealerHand)) {
             ui.displayGameState(state.revealDealer(dealer));
-            if (playerHand.isBlackjack()) {
+            if (ProcessHand.isBlackjack(dealerHand)) {
                 ui.displayResult(MESSAGE_TIE);
             } else {
                 ui.displayResult(MESSAGE_LOST);
@@ -192,18 +192,18 @@ public class Logic {
      * @return an integer that represents the type of hand this is.
      */
     private TypeOfHand processHand(Hand hand) {
-        if (GameLogic.isStartingHand(hand)) {
-            if (GameLogic.isBlackjack(hand)) {
+        if (ProcessHand.isStartingHand(hand)) {
+            if (ProcessHand.isBlackjack(hand)) {
                 return BLACKJACK;
-            } else if (GameLogic.isEqualRank(hand)) {
+            } else if (ProcessHand.isEqualRank(hand)) {
                 return EQUALVALUE;
             }
             else {
                 return UNEQUALVALUE;
             }
-        } else if (GameLogic.isLessThan21(hand)) { // not starting hand
+        } else if (ProcessHand.isLessThan21(hand)) { // not starting hand
             return LESSTHAN21;
-        } else if (GameLogic.isExactly21(hand)) {
+        } else if (ProcessHand.isExactly21(hand)) {
             return EXACTLY21;
         }
         else { // more than 21
@@ -249,7 +249,7 @@ public class Logic {
 
                 case DOUBLE:
                     logicUtil.doubleDown(hand, handNum);
-                    if (!hand.is21OrLess()) {
+                    if (ProcessHand.isMoreThan21(hand)) {
                         executeBustHand();
                     }
                     break;
@@ -299,7 +299,7 @@ public class Logic {
                 case DOUBLE:
                     logicUtil.doubleDown(hand, handNum);
                     ui.displayGameState(state);
-                    if (!hand.is21OrLess()) {
+                    if (ProcessHand.isMoreThan21(hand)) {
                         executeBustHand();
                     }
                     break;

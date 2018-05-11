@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import com.blackjack.logic.Deal;
 import com.blackjack.logic.DealerRobot;
+import com.blackjack.logic.GameLogic;
+import com.blackjack.logic.ProcessHand;
 import com.blackjack.model.card.Card;
 import com.blackjack.model.Dealer;
 import com.blackjack.model.Hand;
@@ -128,39 +130,24 @@ public class LogicUtil {
 
         /** First consider the situations where we do not have to compare the value */
         Hand dealerHand = new Hand(dealerCards);
-        if (dealerHand.isBlackjack()) {
+        if (ProcessHand.isBlackjack(dealerHand)) {
             result = MESSAGE_LOST;
             hasNewInfo = true;
             return result;
         }
 
         /** Situations where we have to compare the values */
-        int dealerValue = 0;
-
-        /** Calculate the dealer's hand value */
-        for (Card card : dealerCards) {
-            dealerValue += card.getValue();
-            // Account for the changing ACE value
-            if (dealerValue == VALUE_WITH_ACE_11 ) {
-                dealerValue--;
-            }
-        }
+        int dealerValue = ProcessHand.calculateValue(dealerHand);
 
         /** Calculate and determine win/loss for each hand of the player */
         int handNum = 1;
         for (Hand hand : playerHands) {
             if (hand.getCurrentBid() != 0) {
-                int playerValue = 0;
-                for (Card card : hand.getCards()) {
-                    playerValue += card.getValue();
-                    // Account for the changing ACE value
-                    if (playerValue == VALUE_WITH_ACE_11) {
-                        playerValue--;
-                    }
-                }
+                int playerValue = ProcessHand.calculateValue(hand);
+
                 result += "Hand " + handNum + ": ";
                 // Determining win/loss of current hand
-                if (playerValue > dealerValue || !dealerHand.is21OrLess()) {
+                if (playerValue > dealerValue || ProcessHand.isMoreThan21(dealerHand)) {
                     result += MESSAGE_WON;
                     player.increaseBalance(hand.getCurrentBid());
                 } else if (dealerValue > playerValue) {
