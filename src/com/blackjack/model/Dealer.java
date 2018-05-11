@@ -2,6 +2,8 @@ package com.blackjack.model;
 
 import java.util.ArrayList;
 
+import com.blackjack.model.card.Card;
+
 /**
  * Represents the dealer in the game of Blackjack
  */

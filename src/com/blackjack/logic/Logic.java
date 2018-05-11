@@ -16,9 +16,16 @@ import static com.blackjack.logic.util.LogicUtil.HIT;
 import static com.blackjack.logic.util.LogicUtil.SPLIT;
 import static com.blackjack.logic.util.LogicUtil.STAND;
 import static com.blackjack.logic.util.LogicUtil.SURRENDER;
+import static com.blackjack.logic.util.TypeOfHand.BLACKJACK;
+import static com.blackjack.logic.util.TypeOfHand.EQUALVALUE;
+import static com.blackjack.logic.util.TypeOfHand.EXACTLY21;
+import static com.blackjack.logic.util.TypeOfHand.LESSTHAN21;
+import static com.blackjack.logic.util.TypeOfHand.MORETHAN21;
+import static com.blackjack.logic.util.TypeOfHand.UNEQUALVALUE;
 import static com.blackjack.model.Hand.DEFAULT_BID;
 
 import com.blackjack.logic.util.LogicUtil;
+import com.blackjack.logic.util.TypeOfHand;
 import com.blackjack.ui.GameState;
 import com.blackjack.ui.Ui;
 import com.blackjack.model.Dealer;
@@ -31,13 +38,6 @@ import com.blackjack.model.Player;
  * as well as make calls to the UI.
  */
 public class Logic {
-
-    /** Static variables that are used to map the type of hand of a player */
-    private static final int BLACKJACK = 1;
-    private static final int SPLITTABLE = 2;
-    private static final int NOT_SPLITTABLE = 3;
-    private static final int LESSTHAN_OR_EQUAL_21 = 4;
-    private static final int BUST = 5;
 
     /** Static variables that are used to map user input */
     private static final int YES = 1;
@@ -130,7 +130,7 @@ public class Logic {
         while (handNum <  player.getHands().size()) {
             hand = player.getHands().get(handNum);
             currentBid = hand.getCurrentBid();
-            int typeOfHand = processHand(hand);
+            TypeOfHand typeOfHand = processHand(hand);
             executeMove(typeOfHand);
             handNum++;
             handNumOneIndex = handNum + 1;
@@ -147,7 +147,7 @@ public class Logic {
      * Runs the relevant logic for the type of hand the player has received
      * @param typeOfHand represents the various hands available
      */
-    private void executeMove(int typeOfHand) {
+    private void executeMove(TypeOfHand typeOfHand) {
 
         switch (typeOfHand) {
 
@@ -155,16 +155,20 @@ public class Logic {
                 executeBlackjackHand();
                 break;
 
-            case SPLITTABLE:
+            case EQUALVALUE:
                 executeSplittableHand();
                 break;
 
-            case NOT_SPLITTABLE:
+            case UNEQUALVALUE:
                 executeNotSplittableHand();
                 break;
 
-            case BUST:
+            case MORETHAN21:
                 executeBustHand();
+                break;
+
+            case EXACTLY21:
+                // do nothing
                 break;
 
             default: // less than 21 case
@@ -178,7 +182,7 @@ public class Logic {
      * @param handNum corresponds to which hand is being played right now.
      * @return an integer that represents the type of hand this is
      */
-    private int processHand(int handNum) {
+    private TypeOfHand processHand(int handNum) {
         hand = player.getHands().get(handNum);
         return processHand(hand);
     }
@@ -187,21 +191,23 @@ public class Logic {
      * Processes the hand the player has to decide what options are available to him
      * @return an integer that represents the type of hand this is.
      */
-    private int processHand(Hand hand) {
-        if (hand.isStartingHand()) {
-            if (hand.isBlackjack()) {
+    private TypeOfHand processHand(Hand hand) {
+        if (GameLogic.isStartingHand(hand)) {
+            if (GameLogic.isBlackjack(hand)) {
                 return BLACKJACK;
-            } else if (hand.isEqualRank()) {
-                return SPLITTABLE;
+            } else if (GameLogic.isEqualRank(hand)) {
+                return EQUALVALUE;
             }
             else {
-                return NOT_SPLITTABLE;
+                return UNEQUALVALUE;
             }
-        } else if (hand.is21OrLess()) { // not starting hand
-            return LESSTHAN_OR_EQUAL_21;
+        } else if (GameLogic.isLessThan21(hand)) { // not starting hand
+            return LESSTHAN21;
+        } else if (GameLogic.isExactly21(hand)) {
+            return EXACTLY21;
         }
         else { // more than 21
-            return BUST;
+            return MORETHAN21;
         }
     }
 

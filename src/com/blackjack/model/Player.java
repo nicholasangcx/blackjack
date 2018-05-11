@@ -2,6 +2,8 @@ package com.blackjack.model;
 
 import java.util.ArrayList;
 
+import com.blackjack.model.card.Card;
+
 /**
  * Represents a player in the game of Blackjack, keeping track of his
  * balance cash and hands in the game.

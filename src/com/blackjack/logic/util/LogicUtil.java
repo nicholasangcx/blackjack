@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import com.blackjack.logic.Deal;
 import com.blackjack.logic.DealerRobot;
-import com.blackjack.model.Card;
+import com.blackjack.model.card.Card;
 import com.blackjack.model.Dealer;
 import com.blackjack.model.Hand;
 import com.blackjack.model.Player;
