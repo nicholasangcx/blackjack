@@ -26,6 +26,7 @@ import static com.blackjack.model.Hand.DEFAULT_BID;
 
 import com.blackjack.logic.util.LogicUtil;
 import com.blackjack.logic.util.TypeOfHand;
+import com.blackjack.model.Table;
 import com.blackjack.ui.GameState;
 import com.blackjack.ui.Ui;
 import com.blackjack.model.gamblers.Dealer;
@@ -44,9 +45,8 @@ public class Logic {
     private static final int NO = 2;
 
     private Deal deal;
-    private GameState state;
     private Dealer dealer;
-    private Player player;
+    private Table table;
     private Ui ui;
     private LogicUtil logicUtil;
 
@@ -55,8 +55,8 @@ public class Logic {
     private int currentBid;
     private Hand hand;
     
-    public Logic(Player player, Ui ui) {
-        this.player = player;
+    public Logic(Table table, Ui ui) {
+        this.table = table;
         this.ui = ui;
     }
 
@@ -66,12 +66,11 @@ public class Logic {
      */
     public void startGame() {
         // Re-initializes all the required classes
-        state = new GameState();
         deal = new Deal(state);
         dealer = new Dealer();
-        player.clearHands();
+        table.clearHands();
 
-        deal.initialHand(dealer, player);
+        deal.initialHand(table);
         ui.displayNewGame();
         ui.displayGameState(state);
     }

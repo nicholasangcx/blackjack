@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import com.blackjack.model.Hand;
 import com.blackjack.model.card.Card;
 
-public abstract class Gamblers {
+public abstract class Gambler {
 
     private ArrayList<Hand> hands;
 
-    protected Gamblers() {
+    protected Gambler() {
         hands = new ArrayList<Hand>();
     }
 
