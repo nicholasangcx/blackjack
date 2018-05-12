@@ -129,10 +129,12 @@ public class GameState {
      */
     @Override
     public String toString() {
-        String result = "\n" + CARDS_DEALER + dealerCards
-                    + "\n\n" + CARDS_PLAYER + playerCards
-                    + "\n\n" + "Current Bid: " + playerBids.toString()
-                    + "\n" + "Balance Left: " + playerBalance + "\n";
+        String result = "\n" + CARDS_DEALER + dealerCards + "\n\n";
+        for (int playerNum = 1; playerNum <= playerCards.size(); playerNum++) {
+            result += "Player " + playerNum + " Cards: \n" + playerCards.get(playerNum-1)
+                    + "\n\n" + "Current Bid: " + playerBids.get(playerNum-1)
+                    + "\n" + "Balance Left: " + playerBalance.get(playerNum-1) + "\n\n";
+        }
         return result;
     }
 }

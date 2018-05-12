@@ -50,6 +50,11 @@ public class Ui {
         out.println(result);
     }
 
+    public int queryPlayer(int playerNum, String message) {
+        out.print("Player " + playerNum + ": " + message);
+        return in.nextInt();
+    }
+
     /**
      * This method displays just the current bids and balance value of the player
      * without showing the entire game state, which involves displaying the respective cards too.

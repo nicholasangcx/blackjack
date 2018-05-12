@@ -80,6 +80,7 @@ public class Logic {
 
         deal.initialHand(table);
         table.startingBids();
+        state.updateState(table);
         ui.displayNewGame();
         ui.displayGameState(state);
     }
@@ -95,11 +96,13 @@ public class Logic {
         if (ProcessHand.isBlackjack(dealerHand)) {
             ui.displayGameState(state.revealDealer(dealer));
             for (Player player : players) {
+                playerNumOneIndex = 1;
                 if (ProcessHand.isBlackjack(player.getHands().get(0))) {
-                    ui.displayResult(MESSAGE_TIE);
+                    ui.displayResult("Player " + playerNumOneIndex + ": " + MESSAGE_TIE);
                 } else {
-                    ui.displayResult(MESSAGE_LOST);
+                    ui.displayResult("Player " + playerNumOneIndex + ": " + MESSAGE_LOST);
                 }
+                playerNumOneIndex++;
             }
         } else {
             for (playerNum = 0; playerNum < players.size(); playerNum++) {
@@ -108,28 +111,30 @@ public class Logic {
                 finishGame();
             }
         }
-
+//Stopped here
         /** Processing whether to start a new game */
         if (player.getBalance() < DEFAULT_BID) {
             ui.displayResult(MESSAGE_GOODBYE);
             return false;
         }
 
-        boolean isValidInput;
-        do {
-            int decision = ui.getUserMove(MESSAGE_QUERY_NEW_GAME);
-            if (decision == YES) {
-                return true;
-            } else if (decision == NO) {
-                ui.displayResult(MESSAGE_GOODBYE);
-                return false;
-            } else {
-                ui.displayResult(MESSAGE_INVALID_OPTION);
-                isValidInput = false;
-            }
-        } while (!isValidInput);
+        boolean isValidInput = true;
+        int numOfPlayers = 0;
+        for (playerNumOneIndex = 1; playerNumOneIndex < players.size(); playerNumOneIndex++) {
+            do {
+                int decision = ui.queryPlayer(playerNumOneIndex, MESSAGE_QUERY_NEW_GAME);
+                if (decision == YES) {
+                    numOfPlayers++;
+                } else if (decision == NO) {
+                    ui.displayResult(MESSAGE_GOODBYE);
+                } else {
+                    ui.displayResult(MESSAGE_INVALID_OPTION);
+                    isValidInput = false;
+                }
+            } while (!isValidInput);
+        }
 
-        return false;
+        return numOfPlayers > 0;
     }
 
     /**
@@ -243,7 +248,8 @@ public class Logic {
      * Assume you can still surrender on your first 2 cards of each split hand.
      */
     private void executeSplittableHand() {
-        int move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_FIVE_OPTIONS);
+        int move = ui.getUserMove("Player " + playerNumOneIndex + " Hand " + handNumOneIndex
+                + "\n" + MESSAGE_FIVE_OPTIONS);
 
         boolean isNotValid = false;
 
@@ -283,7 +289,8 @@ public class Logic {
                 default:
                     isNotValid = true;
                     ui.displayResult(MESSAGE_INVALID_OPTION);
-                    move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_FIVE_OPTIONS);
+                    move = ui.getUserMove("Player " + playerNumOneIndex + " Hand " + handNumOneIndex
+                            + "\n" + MESSAGE_FIVE_OPTIONS);
             }
         } while (isNotValid);
     }
@@ -292,7 +299,8 @@ public class Logic {
      * The case where player does not have 2 cards of the same value in his starting hand.
      */
     private void executeNotSplittableHand() {
-        int move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_FOUR_OPTIONS);
+        int move = ui.getUserMove("Player " + playerNumOneIndex + " Hand " + handNumOneIndex
+                + "\n" + MESSAGE_FOUR_OPTIONS);
 
         boolean isNotValid = false;
 
@@ -327,7 +335,8 @@ public class Logic {
                 default:
                     isNotValid = true;
                     ui.displayResult(MESSAGE_INVALID_OPTION);
-                    move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_FOUR_OPTIONS);
+                    move = ui.getUserMove("Player " + playerNumOneIndex + " Hand " + handNumOneIndex
+                            + "\n" + MESSAGE_FOUR_OPTIONS);
             }
         } while (isNotValid);
     }
@@ -347,7 +356,8 @@ public class Logic {
      * or "special" hands.
      */
     private void executeNormalHand() {
-        int move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_TWO_OPTIONS);
+        int move = ui.getUserMove("Player " + playerNumOneIndex + " Hand " + handNumOneIndex
+                + "\n" + MESSAGE_TWO_OPTIONS);
 
         boolean isNotValid = false;
 
@@ -368,7 +378,8 @@ public class Logic {
                 default:
                     isNotValid = true;
                     ui.displayResult(MESSAGE_INVALID_OPTION);
-                    move = ui.getUserMove("Hand No.: " + handNumOneIndex + "\n" + MESSAGE_TWO_OPTIONS);
+                    move = ui.getUserMove("Player " + playerNumOneIndex + " Hand " + handNumOneIndex
+                            + "\n" + MESSAGE_TWO_OPTIONS);
             }
         } while (isNotValid);
     }
