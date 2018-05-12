@@ -29,6 +29,13 @@ public class Table {
         return players;
     }
 
+    public void startingBids() {
+        ArrayList<Player> players = getPlayers();
+        for (Player player : players) {
+            player.startingBid();
+        }
+    }
+
     public void clearHands() {
         for (Gambler gambler : gamblers) {
             gambler.clearHands();

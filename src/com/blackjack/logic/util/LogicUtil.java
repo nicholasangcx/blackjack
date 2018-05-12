@@ -41,10 +41,9 @@ public class LogicUtil {
 
     public LogicUtil(Deal deal, Table table, GameState state) {
         this.table = table;
-        this.player = player;
-        this.dealer = dealer;
         this.deal = deal;
         this.state = state;
+        dealer = (Dealer)table.getGamblers().get(0);
 
         robot = new DealerRobot(deal, dealer);
     }
@@ -62,26 +61,29 @@ public class LogicUtil {
     /**
      * Handles the execution when player chooses to be dealt a card
      */
-    public void hit(int currentHandNum) {
+    public void hit(int currentHandNum, int playerNum) {
+        player = (Player)table.getGamblers().get(playerNum+1);
         deal.dealCard(player, currentHandNum);
-        state.updateState(player);
+        state.updatePlayer(player, playerNum);
     }
 
     /**
      * Handles the execution when player chooses to double down on their initial bid
      */
-    public void doubleDown(Hand currentHand, int currentHandNum) {
-        currentHand.setCurrentBid(currentHand.getCurrentBid() * 2);
+    public void doubleDown(int currentHandNum, int playerNum) {
+        player = (Player)table.getGamblers().get(playerNum+1);
+        player.setBid(currentHandNum, player.getBids().get(currentHandNum) * 2);
         deal.dealCard(player, currentHandNum);
-        state.updateState(player);
+        state.updatePlayer(player, playerNum);
     }
 
     /**
      * Handles the execution when player chooses to surrender and save half their bid
      */
-    public void surrender(Hand currentHand) {
-        player.decreaseBalance(currentHand.getCurrentBid()/2);
-        currentHand.clearBid();
+    public void surrender(int currentHandNum, int playerNum) {
+        player = (Player)table.getGamblers().get(playerNum+1);
+        player.decreaseBalance(player.getBids().get(currentHandNum) / 2);
+        player.clearBid(currentHandNum);
     }
 
     /**
@@ -89,14 +91,15 @@ public class LogicUtil {
      * Split your 2 equal value cards into 2 hands. One additional card is dealt
      * to each hand immediately since the player has no choice but to take it anyway.
      */
-    public void split(int currentHandNum) {
+    public void split(int currentHandNum, int playerNum) {
+        player = (Player)table.getGamblers().get(playerNum+1);
         player.splitHands(currentHandNum);
 
         deal.dealCard(player, currentHandNum);
         int nextHand = currentHandNum + 1;
         deal.dealCard(player, nextHand);
 
-        state.updateState(player);
+        state.updatePlayer(player, playerNum);
     }
 
     /**
@@ -108,7 +111,7 @@ public class LogicUtil {
         robot.execute();
 
         String result = determineWinner(dealer, player);
-        state.updateState(player);
+        state.updateDealer(dealer);
 
         return result;
     }
@@ -140,23 +143,23 @@ public class LogicUtil {
 
         /** Calculate and determine win/loss for each hand of the player */
         int handNum = 1;
-        for (Hand hand : playerHands) {
-            if (hand.getCurrentBid() != 0) {
-                int playerValue = ProcessHand.calculateValue(hand);
+        for (int i = 0; i <playerHands.size(); i++) {
+            if (player.getBids().get(i) != 0) {
+                int playerValue = ProcessHand.calculateValue(playerHands.get(i));
 
                 result += "Hand " + handNum + ": ";
                 // Determining win/loss of current hand
                 if (playerValue > dealerValue || ProcessHand.isMoreThan21(dealerHand)) {
                     result += MESSAGE_WON;
-                    player.increaseBalance(hand.getCurrentBid());
+                    player.increaseBalance(player.getBids().get(i));
                 } else if (dealerValue > playerValue) {
                     result += MESSAGE_LOST;
-                    player.decreaseBalance(hand.getCurrentBid());
+                    player.decreaseBalance(player.getBids().get(i));
                 } else {
                     result += MESSAGE_TIE;
                 }
                 result += "\n";
-                hand.clearBid();
+                player.clearBid(i);
                 hasNewInfo = true;
             }
             handNum++;

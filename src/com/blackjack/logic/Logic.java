@@ -22,7 +22,7 @@ import static com.blackjack.logic.util.TypeOfHand.EXACTLY21;
 import static com.blackjack.logic.util.TypeOfHand.LESSTHAN21;
 import static com.blackjack.logic.util.TypeOfHand.MORETHAN21;
 import static com.blackjack.logic.util.TypeOfHand.UNEQUALVALUE;
-import static com.blackjack.model.Hand.DEFAULT_BID;
+import static com.blackjack.model.gamblers.Player.DEFAULT_BID;
 
 import java.util.ArrayList;
 
@@ -53,7 +53,10 @@ public class Logic {
     private GameState state;
     private LogicUtil logicUtil;
     private Dealer dealer;
+    private Player player;
 
+    private int playerNum;
+    private int playerNumOneIndex;
     private int handNum;
     private int handNumOneIndex;
     private int currentBid;
@@ -76,6 +79,7 @@ public class Logic {
         table.clearHands();
 
         deal.initialHand(table);
+        table.startingBids();
         ui.displayNewGame();
         ui.displayGameState(state);
     }
@@ -98,8 +102,10 @@ public class Logic {
                 }
             }
         } else {
-            for (Player player : players) {
-                finishGame(player);
+            for (playerNum = 0; playerNum < players.size(); playerNum++) {
+                player = players.get(playerNum);
+                playerNumOneIndex = playerNum + 1;
+                finishGame();
             }
         }
 
@@ -129,7 +135,7 @@ public class Logic {
     /**
      * Execution of the rest of the game, after the initial dealing and processing of cards
      */
-    private void finishGame(Player player) {
+    private void finishGame() {
         logicUtil = new LogicUtil(deal, table, state);
         handNum = 0;
         handNumOneIndex = handNum + 1;
@@ -137,7 +143,7 @@ public class Logic {
         /** Execution of the game, for each hand */
         while (handNum <  player.getHands().size()) {
             hand = player.getHands().get(handNum);
-            currentBid = hand.getCurrentBid();
+            currentBid = player.getBids().get(handNum);
             TypeOfHand typeOfHand = processHand(hand);
             executeMove(typeOfHand);
             handNum++;
@@ -227,7 +233,7 @@ public class Logic {
      */
     private void executeBlackjackHand() {
         player.increaseBalance(currentBid * 25/10);
-        player.getHands().get(handNum).clearBid();
+        player.clearBid(handNum);
         ui.displayResult(MESSAGE_BLACKJACK);
         ui.displayBalance(player);
     }
@@ -250,26 +256,26 @@ public class Logic {
                     break;
 
                 case HIT:
-                    logicUtil.hit(handNum);
+                    logicUtil.hit(handNum, playerNum);
                     ui.displayGameState(state);
                     executeMove(processHand(handNum));
                     break;
 
                 case DOUBLE:
-                    logicUtil.doubleDown(hand, handNum);
+                    logicUtil.doubleDown(handNum, playerNum);
                     if (ProcessHand.isMoreThan21(hand)) {
                         executeBustHand();
                     }
                     break;
 
                 case SURRENDER:
-                    logicUtil.surrender(hand);
+                    logicUtil.surrender(handNum, playerNum);
                     ui.displayResult(MESSAGE_SURRENDER);
                     ui.displayBalance(player);
                     break;
 
                 case SPLIT:
-                    logicUtil.split(handNum);
+                    logicUtil.split(handNum, playerNum);
                     ui.displayGameState(state);
                     handNum--; // to reprocess the current hand again
                     break;
@@ -299,13 +305,13 @@ public class Logic {
                     break;
 
                 case HIT:
-                    logicUtil.hit(handNum);
+                    logicUtil.hit(handNum, playerNum);
                     ui.displayGameState(state);
                     executeMove(processHand(handNum));
                     break;
 
                 case DOUBLE:
-                    logicUtil.doubleDown(hand, handNum);
+                    logicUtil.doubleDown(handNum, playerNum);
                     ui.displayGameState(state);
                     if (ProcessHand.isMoreThan21(hand)) {
                         executeBustHand();
@@ -313,7 +319,7 @@ public class Logic {
                     break;
 
                 case SURRENDER:
-                    logicUtil.surrender(hand);
+                    logicUtil.surrender(handNum, playerNum);
                     ui.displayResult(MESSAGE_SURRENDER);
                     ui.displayBalance(player);
                     break;
@@ -331,7 +337,7 @@ public class Logic {
      */
     private void executeBustHand() {
         player.decreaseBalance(currentBid);
-        hand.clearBid();
+        player.clearBid(handNum);
         ui.displayResult(MESSAGE_BUST);
         ui.displayBalance(player);
     }
@@ -354,7 +360,7 @@ public class Logic {
                     break;
 
                 case HIT:
-                    logicUtil.hit(handNum);
+                    logicUtil.hit(handNum, playerNum);
                     ui.displayGameState(state);
                     executeMove(processHand(handNum));
                     break;

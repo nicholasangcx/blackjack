@@ -12,6 +12,7 @@ import com.blackjack.model.card.Card;
 public class Player extends Gambler {
 
     private static final int STARTING_MONEY = 100;
+    public static final int DEFAULT_BID = 10;
 
     /** Contains a list of all the hands the player has currently. */
     private ArrayList<Hand> hands;
@@ -19,7 +20,6 @@ public class Player extends Gambler {
     private int balance;
 
     public Player() {
-        super();
         balance = STARTING_MONEY;
         bids = new ArrayList<Integer>();
     }
@@ -37,8 +37,25 @@ public class Player extends Gambler {
         return (balance - cashInBids);
     }
 
+    public void startingBid() {
+        bids.add(DEFAULT_BID);
+    }
+
     public ArrayList<Integer> getBids() {
         return bids;
+    }
+
+    public void setBid(int handNum, int bid) {
+        bids.remove(handNum);
+        bids.add(handNum, bid);
+    }
+
+    /**
+     * Resets the bid to zero.
+     */
+    public void clearBid(int handNum) {
+        bids.remove(handNum);
+        bids.add(handNum, 0);
     }
 
     public void increaseBalance(int amount) {
@@ -56,6 +73,7 @@ public class Player extends Gambler {
      * @param currentHand denotes the hand that we are splitting.
      */
     public void splitHands(int currentHand) {
+        hands = super.getHands();
         ArrayList<Card> additionalList = new ArrayList<Card>();
 
         Card firstCard = hands.get(currentHand).remove();

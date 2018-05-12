@@ -57,8 +57,8 @@ public class Ui {
      */
     public void displayBalance(Player player) {
         String message = "Current Bid: ";
-        for (Hand hand : player.getHands()) {
-            message += hand.getCurrentBid() + DELIMITER;
+        for (int bid : player.getBids()) {
+            message += bid + DELIMITER;
         }
         message = message.substring(0, message.length() - 2);
         message += "\nBalance Left: " + player.getBalance();

@@ -22,7 +22,7 @@ public class DealerRobot {
     public void execute() {
         Hand hand = dealer.getHands().get(0);
         while (ProcessHand.isLessThanDealerMin(hand)) {
-            deal.dealCard(dealer);
+            deal.dealCard(dealer, 0);
             hand = dealer.getHands().get(0);
         }
     }

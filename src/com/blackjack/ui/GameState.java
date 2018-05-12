@@ -49,7 +49,7 @@ public class GameState {
      * Takes in the data of the dealer as strings. Except the second card which is hidden.
      * @param dealer the dealer whose data we are taking in.
      */
-    private void updateDealer(Dealer dealer) {
+    public void updateDealer(Dealer dealer) {
         ArrayList<Hand> dealerHands = dealer.getHands();
         dealerCards = "";
         dealerCards += dealerHands.get(0).getCards().get(0).getFace() + " " + CARD_HIDDEN;
@@ -78,6 +78,33 @@ public class GameState {
 
         playerBalance.add(player.getBalance());
 
+    }
+
+    public void updatePlayer(Player player, int playerNum) {
+        ArrayList<Hand> hands = player.getHands();
+        ArrayList<Integer> bids = player.getBids();
+
+        String cards = "";
+        for (Hand hand : hands) {
+            for (Card card : hand.getCards()) {
+                cards += card.getFace() + " ";
+            }
+            cards += DELIMITER;
+        }
+        playerCards.remove(playerNum);
+        // Remove the last delimiter.
+        playerCards.add(playerNum, cards.substring(0, cards.length() - 2));
+
+        String totalBids = "";
+        for (int bid : bids) {
+            totalBids += Integer.toString(bid) + " " + DELIMITER;
+        }
+        playerBids.remove(playerNum);
+        // Remove the last delimiter.
+        playerBids.add(playerNum, totalBids.substring(0, totalBids.length() - 2));
+
+        playerBalance.remove(playerNum);
+        playerBalance.add(playerNum, player.getBalance());
     }
 
     /**

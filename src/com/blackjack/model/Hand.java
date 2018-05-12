@@ -9,10 +9,7 @@ import com.blackjack.model.card.Card;
  */
 public class Hand {
 
-    public static final int DEFAULT_BID = 10;
-
     private ArrayList<Card> hand;
-    private int currentBid;
 
     /**
      * Every hand is given a default bid when it is first initialized.
@@ -20,7 +17,6 @@ public class Hand {
      */
     public Hand(ArrayList<Card> playersHand) {
         this.hand = playersHand;
-        currentBid = DEFAULT_BID;
     }
 
     /**
@@ -47,18 +43,4 @@ public class Hand {
         return hand;
     }
 
-    public int getCurrentBid() {
-        return currentBid;
-    }
-
-    public void setCurrentBid(int currentBid) {
-        this.currentBid = currentBid;
-    }
-
-    /**
-     * Resets the bid to zero.
-     */
-    public void clearBid() {
-        currentBid = 0;
-    }
 }
