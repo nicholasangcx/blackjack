@@ -24,6 +24,8 @@ import static com.blackjack.logic.util.TypeOfHand.MORETHAN21;
 import static com.blackjack.logic.util.TypeOfHand.UNEQUALVALUE;
 import static com.blackjack.model.Hand.DEFAULT_BID;
 
+import java.util.ArrayList;
+
 import com.blackjack.logic.util.LogicUtil;
 import com.blackjack.logic.util.TypeOfHand;
 import com.blackjack.model.Table;
@@ -44,11 +46,13 @@ public class Logic {
     private static final int YES = 1;
     private static final int NO = 2;
 
-    private Deal deal;
-    private Dealer dealer;
     private Table table;
     private Ui ui;
+
+    private Deal deal;
+    private GameState state;
     private LogicUtil logicUtil;
+    private Dealer dealer;
 
     private int handNum;
     private int handNumOneIndex;
@@ -58,6 +62,7 @@ public class Logic {
     public Logic(Table table, Ui ui) {
         this.table = table;
         this.ui = ui;
+        dealer = (Dealer)table.getGamblers().get(0);
     }
 
     /**
@@ -66,8 +71,8 @@ public class Logic {
      */
     public void startGame() {
         // Re-initializes all the required classes
-        deal = new Deal(state);
-        dealer = new Dealer();
+        state = new GameState();
+        deal = new Deal();
         table.clearHands();
 
         deal.initialHand(table);
@@ -80,18 +85,22 @@ public class Logic {
      * @return true if user wants to continue playing another game.
      */
     public boolean processGame() {
-        Hand dealerHand = new Hand(dealer.getHands().get(0).getCards());
-        Hand playerHand = new Hand(player.getHands().get(0).getCards());
+        Hand dealerHand = dealer.getHands().get(0);
+        ArrayList<Player> players = table.getPlayers();
 
         if (ProcessHand.isBlackjack(dealerHand)) {
             ui.displayGameState(state.revealDealer(dealer));
-            if (ProcessHand.isBlackjack(dealerHand)) {
-                ui.displayResult(MESSAGE_TIE);
-            } else {
-                ui.displayResult(MESSAGE_LOST);
+            for (Player player : players) {
+                if (ProcessHand.isBlackjack(player.getHands().get(0))) {
+                    ui.displayResult(MESSAGE_TIE);
+                } else {
+                    ui.displayResult(MESSAGE_LOST);
+                }
             }
         } else {
-            finishGame();
+            for (Player player : players) {
+                finishGame(player);
+            }
         }
 
         /** Processing whether to start a new game */
@@ -120,8 +129,8 @@ public class Logic {
     /**
      * Execution of the rest of the game, after the initial dealing and processing of cards
      */
-    private void finishGame() {
-        logicUtil = new LogicUtil(deal, dealer, player, state);
+    private void finishGame(Player player) {
+        logicUtil = new LogicUtil(deal, table, state);
         handNum = 0;
         handNumOneIndex = handNum + 1;
 

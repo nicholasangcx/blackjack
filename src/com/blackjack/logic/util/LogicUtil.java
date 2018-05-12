@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import com.blackjack.logic.Deal;
 import com.blackjack.logic.DealerRobot;
 import com.blackjack.logic.ProcessHand;
+import com.blackjack.model.Table;
 import com.blackjack.model.card.Card;
 import com.blackjack.model.gamblers.Dealer;
 import com.blackjack.model.Hand;
@@ -30,6 +31,7 @@ public class LogicUtil {
     /** Used to determine if there is previously undisplayed information */
     public boolean hasNewInfo;
 
+    private Table table;
     private Player player;
     private Dealer dealer;
     private Deal deal;
@@ -37,7 +39,8 @@ public class LogicUtil {
 
     private DealerRobot robot;
 
-    public LogicUtil(Deal deal, Dealer dealer, Player player, GameState state) {
+    public LogicUtil(Deal deal, Table table, GameState state) {
+        this.table = table;
         this.player = player;
         this.dealer = dealer;
         this.deal = deal;

@@ -2,6 +2,7 @@ package com.blackjack;
 
 import com.blackjack.logic.Logic;
 import com.blackjack.model.Table;
+import com.blackjack.model.gamblers.Dealer;
 import com.blackjack.model.gamblers.Player;
 import com.blackjack.ui.Ui;
 
@@ -11,6 +12,7 @@ import com.blackjack.ui.Ui;
  */
 public class Main {
 
+    private Dealer dealer;
     private Table table;
     private Ui ui;
     private Logic logic;
@@ -35,7 +37,9 @@ public class Main {
      * or will interact with the user, as well as adding a new player.
      */
     private void init() {
+        dealer = new Dealer();
         table = new Table();
+        table.addPlayers(dealer);
         ui = new Ui();
         logic = new Logic(table, ui);
     }

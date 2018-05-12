@@ -41,7 +41,7 @@ public class GameState {
 
         for (int i = 1; i < gamblers.size(); i++) {
             Player player = (Player)gamblers.get(i);
-            updatePlayer(player, i);
+            updatePlayer(player);
         }
     }
 
@@ -55,8 +55,10 @@ public class GameState {
         dealerCards += dealerHands.get(0).getCards().get(0).getFace() + " " + CARD_HIDDEN;
     }
 
-    private void updatePlayer(Player player, int gamblerNum) {
+    private void updatePlayer(Player player) {
         ArrayList<Hand> hands = player.getHands();
+        ArrayList<Integer> bids = player.getBids();
+
         String cards = "";
         for (Hand hand : hands) {
             for (Card card : hand.getCards()) {
@@ -67,12 +69,12 @@ public class GameState {
         // Remove the last delimiter.
         playerCards.add(cards.substring(0, cards.length() - 2));
 
-        String bids = "";
-        for (Hand hand : hands) {
-            bids += Integer.toString(hand.getCurrentBid()) + " " + DELIMITER;
+        String totalBids = "";
+        for (int bid : bids) {
+            totalBids += Integer.toString(bid) + " " + DELIMITER;
         }
         // Remove the last delimiter.
-        playerBids.add(bids.substring(0, bids.length() - 2));
+        playerBids.add(totalBids.substring(0, totalBids.length() - 2));
 
         playerBalance.add(player.getBalance());
 

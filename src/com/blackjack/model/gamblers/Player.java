@@ -37,6 +37,10 @@ public class Player extends Gambler {
         return (balance - cashInBids);
     }
 
+    public ArrayList<Integer> getBids() {
+        return bids;
+    }
+
     public void increaseBalance(int amount) {
         balance += amount;
     }
