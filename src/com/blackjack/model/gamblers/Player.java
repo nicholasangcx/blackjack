@@ -21,7 +21,6 @@ public class Player extends Gambler {
 
     public Player() {
         balance = STARTING_MONEY;
-        bids = new ArrayList<Integer>();
     }
 
     /**
@@ -38,6 +37,7 @@ public class Player extends Gambler {
     }
 
     public void startingBid() {
+        bids = new ArrayList<Integer>();
         bids.add(DEFAULT_BID);
     }
 
@@ -48,6 +48,10 @@ public class Player extends Gambler {
     public void setBid(int handNum, int bid) {
         bids.remove(handNum);
         bids.add(handNum, bid);
+    }
+
+    public void addBid() {
+        bids.add(DEFAULT_BID);
     }
 
     /**

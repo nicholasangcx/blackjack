@@ -29,7 +29,7 @@ public class Ui {
 
     /** Just to print messages to the user */
     private void showToUser(String message) {
-        out.println(message);
+        out.print(message);
     }
 
     /**
@@ -66,7 +66,7 @@ public class Ui {
             message += bid + DELIMITER;
         }
         message = message.substring(0, message.length() - 2);
-        message += "\nBalance Left: " + player.getBalance();
+        message += "\nBalance Left: " + player.getBalance() + "\n";
         out.println(message);
     }
 

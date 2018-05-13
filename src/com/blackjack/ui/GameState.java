@@ -1,7 +1,12 @@
 package com.blackjack.ui;
 
+import static com.blackjack.common.Messages.MESSAGE_LOST;
+import static com.blackjack.common.Messages.MESSAGE_TIE;
+import static com.blackjack.common.Messages.MESSAGE_WON;
+
 import java.util.ArrayList;
 
+import com.blackjack.logic.ProcessHand;
 import com.blackjack.model.Hand;
 import com.blackjack.model.Table;
 import com.blackjack.model.card.Card;
@@ -16,7 +21,6 @@ import com.blackjack.model.gamblers.Player;
 public class GameState {
 
     private static final String CARDS_DEALER = "Dealer's Cards: \n";
-    private static final String CARDS_PLAYER = "Your Cards: \n";
     private static final String CARD_HIDDEN = "X";
     private static final String DELIMITER = ", ";
 
@@ -24,6 +28,9 @@ public class GameState {
     private ArrayList<String> playerCards;
     private ArrayList<String> playerBids;
     private ArrayList<Integer> playerBalance;
+
+    /** Used to determine if there is previously undisplayed information */
+    public boolean hasNewInfo;
 
     public GameState() {
         dealerCards = "";
@@ -51,8 +58,9 @@ public class GameState {
      */
     public void updateDealer(Dealer dealer) {
         ArrayList<Hand> dealerHands = dealer.getHands();
+        Card card = dealerHands.get(0).getCards().get(0);
         dealerCards = "";
-        dealerCards += dealerHands.get(0).getCards().get(0).getFace() + " " + CARD_HIDDEN;
+        dealerCards += card.getFace().face() + card.getSuit().suit() + " " + CARD_HIDDEN;
     }
 
     private void updatePlayer(Player player) {
@@ -62,7 +70,7 @@ public class GameState {
         String cards = "";
         for (Hand hand : hands) {
             for (Card card : hand.getCards()) {
-                cards += card.getFace() + " ";
+                cards += card.getFace().face() + card.getSuit().suit() + " ";
             }
             cards += DELIMITER;
         }
@@ -87,7 +95,7 @@ public class GameState {
         String cards = "";
         for (Hand hand : hands) {
             for (Card card : hand.getCards()) {
-                cards += card.getFace() + " ";
+                cards += card.getFace().face() + card.getSuit().suit() + " ";
             }
             cards += DELIMITER;
         }
@@ -116,9 +124,52 @@ public class GameState {
         dealerCards = "";
         Hand dealerHand = dealer.getHands().get(0);
         for (Card card: dealerHand.getCards()) {
-            dealerCards += card.getFace() + " ";
+            dealerCards += card.getFace().face() + card.getSuit().suit() + " ";
         }
         return this;
+    }
+
+    /**
+     * Determines the winner of this iteration of the game
+     * @return the outcome with respect to the player
+     * It also updates if there is any new information to be provided to the player.
+     */
+    public String determineWinner(Player player, int playerNum, Dealer dealer) {
+        hasNewInfo = false;
+        ArrayList<Card> dealerCards = dealer.getHands().get(0).getCards();
+        ArrayList<Hand> playerHands = player.getHands();
+        Hand dealerHand = new Hand(dealerCards);
+
+        String result = "";
+        /** Situations where we have to compare the values */
+        int dealerValue = ProcessHand.calculateValue(dealerHand);
+
+        /** Calculate and determine win/loss for each hand of the player */
+        int handNum = 1;
+        for (int i = 0; i <playerHands.size(); i++) {
+            if (player.getBids().get(i) != 0) {
+                if (i > 0) {
+                    result += "\n";
+                }
+                int playerValue = ProcessHand.calculateValue(playerHands.get(i));
+                result += "Player " + playerNum + " Hand " + handNum + ": ";
+                // Determining win/loss of current hand
+                if (playerValue > dealerValue || ProcessHand.isMoreThan21(dealerHand)) {
+                    result += MESSAGE_WON;
+                    player.increaseBalance(player.getBids().get(i));
+                } else if (dealerValue > playerValue) {
+                    result += MESSAGE_LOST;
+                    player.decreaseBalance(player.getBids().get(i));
+                } else {
+                    result += MESSAGE_TIE;
+                }
+
+                player.clearBid(i);
+                hasNewInfo = true;
+            }
+            handNum++;
+        }
+        return result;
     }
 
     /**
@@ -132,7 +183,7 @@ public class GameState {
         String result = "\n" + CARDS_DEALER + dealerCards + "\n\n";
         for (int playerNum = 1; playerNum <= playerCards.size(); playerNum++) {
             result += "Player " + playerNum + " Cards: \n" + playerCards.get(playerNum-1)
-                    + "\n\n" + "Current Bid: " + playerBids.get(playerNum-1)
+                    + "\n" + "Current Bid: " + playerBids.get(playerNum-1)
                     + "\n" + "Balance Left: " + playerBalance.get(playerNum-1) + "\n\n";
         }
         return result;

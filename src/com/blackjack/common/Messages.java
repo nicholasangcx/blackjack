@@ -20,4 +20,5 @@ public class Messages {
     public static final String MESSAGE_QUERY_NEW_GAME = "Start a new game? (1 for yes, 2 for no): ";
     public static final String MESSAGE_QUERY_NUM_PLAYERS = "Enter number of players (Maximum 4): ";
     public static final String MESSAGE_GOODBYE = "Thank you for playing Blackjack! Goodbye!!";
+    public static final String MESSAGE_REMOVED = " has been removed from the game. (All players shift up one position)";
 }

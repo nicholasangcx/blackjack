@@ -4,10 +4,10 @@ import static com.blackjack.common.Messages.MESSAGE_BLACKJACK;
 import static com.blackjack.common.Messages.MESSAGE_BUST;
 import static com.blackjack.common.Messages.MESSAGE_FIVE_OPTIONS;
 import static com.blackjack.common.Messages.MESSAGE_FOUR_OPTIONS;
-import static com.blackjack.common.Messages.MESSAGE_GOODBYE;
 import static com.blackjack.common.Messages.MESSAGE_INVALID_OPTION;
 import static com.blackjack.common.Messages.MESSAGE_LOST;
 import static com.blackjack.common.Messages.MESSAGE_QUERY_NEW_GAME;
+import static com.blackjack.common.Messages.MESSAGE_REMOVED;
 import static com.blackjack.common.Messages.MESSAGE_SURRENDER;
 import static com.blackjack.common.Messages.MESSAGE_TIE;
 import static com.blackjack.common.Messages.MESSAGE_TWO_OPTIONS;
@@ -93,6 +93,7 @@ public class Logic {
         Hand dealerHand = dealer.getHands().get(0);
         ArrayList<Player> players = table.getPlayers();
 
+        /** Determine if dealer has a blackjack to decide if we have to complete the game */
         if (ProcessHand.isBlackjack(dealerHand)) {
             ui.displayGameState(state.revealDealer(dealer));
             for (Player player : players) {
@@ -110,28 +111,44 @@ public class Logic {
                 playerNumOneIndex = playerNum + 1;
                 finishGame();
             }
-        }
-//Stopped here
-        /** Processing whether to start a new game */
-        if (player.getBalance() < DEFAULT_BID) {
-            ui.displayResult(MESSAGE_GOODBYE);
-            return false;
+            logicUtil.executeRobot();
+            ui.displayGameState(state.revealDealer(dealer));
+
+            for (int i = 0; i < table.getPlayers().size(); i++) {
+                Player player = table.getPlayers().get(i);
+                String result = state.determineWinner(player, i+1, dealer);
+                state.updatePlayer(player, i);
+                /** If there is additional information about the outcome of the game not already provided */
+                if (state.hasNewInfo) {
+                    ui.displayResult(result);
+                    ui.displayBalance(player);
+                }
+            }
         }
 
         boolean isValidInput = true;
         int numOfPlayers = 0;
-        for (playerNumOneIndex = 1; playerNumOneIndex < players.size(); playerNumOneIndex++) {
-            do {
-                int decision = ui.queryPlayer(playerNumOneIndex, MESSAGE_QUERY_NEW_GAME);
-                if (decision == YES) {
-                    numOfPlayers++;
-                } else if (decision == NO) {
-                    ui.displayResult(MESSAGE_GOODBYE);
-                } else {
-                    ui.displayResult(MESSAGE_INVALID_OPTION);
-                    isValidInput = false;
-                }
-            } while (!isValidInput);
+        for (playerNumOneIndex = 1; playerNumOneIndex <= players.size(); playerNumOneIndex++) {
+            playerNum = playerNumOneIndex - 1;
+            if (players.get(playerNum).getBalance() < DEFAULT_BID) {
+                players.remove(playerNum);
+                playerNumOneIndex--;
+                ui.displayResult("Player " + playerNumOneIndex + MESSAGE_REMOVED);
+            } else {
+                do {
+                    int decision = ui.queryPlayer(playerNumOneIndex, MESSAGE_QUERY_NEW_GAME);
+                    if (decision == YES) {
+                        numOfPlayers++;
+                    } else if (decision == NO) {
+                        players.remove(playerNum);
+                        playerNumOneIndex--;
+                        ui.displayResult("Player " + playerNumOneIndex + MESSAGE_REMOVED);
+                    } else {
+                        ui.displayResult(MESSAGE_INVALID_OPTION);
+                        isValidInput = false;
+                    }
+                } while (!isValidInput);
+            }
         }
 
         return numOfPlayers > 0;
@@ -153,12 +170,6 @@ public class Logic {
             executeMove(typeOfHand);
             handNum++;
             handNumOneIndex = handNum + 1;
-        }
-        String result = logicUtil.executeRobot();
-        /** If there is additional information about the outcome of the game not already provided */
-        if (logicUtil.hasNewInfo) {
-            ui.displayGameState(state.revealDealer(dealer));
-            ui.displayResult(result);
         }
     }
 
@@ -237,9 +248,10 @@ public class Logic {
      * Since we already handled the case for a dealer Blackjack previously.
      */
     private void executeBlackjackHand() {
-        player.increaseBalance(currentBid * 25/10);
+        player.increaseBalance(currentBid * 15/10);
         player.clearBid(handNum);
-        ui.displayResult(MESSAGE_BLACKJACK);
+        state.updatePlayer(player, playerNum);
+        ui.displayResult("Player " + playerNumOneIndex + ": " + MESSAGE_BLACKJACK);
         ui.displayBalance(player);
     }
 
@@ -347,7 +359,8 @@ public class Logic {
     private void executeBustHand() {
         player.decreaseBalance(currentBid);
         player.clearBid(handNum);
-        ui.displayResult(MESSAGE_BUST);
+        state.updatePlayer(player, playerNum);
+        ui.displayResult("Player " + playerNumOneIndex + ": " + MESSAGE_BUST);
         ui.displayBalance(player);
     }
 

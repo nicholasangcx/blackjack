@@ -1,18 +1,9 @@
 package com.blackjack.logic.util;
 
-import static com.blackjack.common.Messages.MESSAGE_LOST;
-import static com.blackjack.common.Messages.MESSAGE_TIE;
-import static com.blackjack.common.Messages.MESSAGE_WON;
-
-import java.util.ArrayList;
-
 import com.blackjack.logic.Deal;
 import com.blackjack.logic.DealerRobot;
-import com.blackjack.logic.ProcessHand;
 import com.blackjack.model.Table;
-import com.blackjack.model.card.Card;
 import com.blackjack.model.gamblers.Dealer;
-import com.blackjack.model.Hand;
 import com.blackjack.model.gamblers.Player;
 import com.blackjack.ui.GameState;
 
@@ -27,9 +18,6 @@ public class LogicUtil {
     public static final int DOUBLE = 3;
     public static final int SURRENDER = 4;
     public static final int SPLIT = 5;
-
-    /** Used to determine if there is previously undisplayed information */
-    public boolean hasNewInfo;
 
     private Table table;
     private Player player;
@@ -99,6 +87,7 @@ public class LogicUtil {
         int nextHand = currentHandNum + 1;
         deal.dealCard(player, nextHand);
 
+        player.addBid();
         state.updatePlayer(player, playerNum);
     }
 
@@ -107,63 +96,9 @@ public class LogicUtil {
      * Checks who the winner is after since everyone has already completed their turns.
      * @return the results of the game with respect to the player.
      */
-    public String executeRobot() {
+    public void executeRobot() {
         robot.execute();
-
-        String result = determineWinner(dealer, player);
         state.updateDealer(dealer);
-
-        return result;
     }
 
-    /**
-     * Determines the winner of this iteration of the game
-     * @param dealer to check and calculate the dealer's card value
-     * @param player to check and calculate the player's card value
-     * @return the outcome with respect to the player
-     * It also updates if there is any new information to be provided to the player.
-     */
-    public String determineWinner(Dealer dealer, Player player) {
-        hasNewInfo = false;
-        ArrayList<Card> dealerCards = dealer.getHands().get(0).getCards();
-        ArrayList<Hand> playerHands = player.getHands();
-
-        String result = "";
-
-        /** First consider the situations where we do not have to compare the value */
-        Hand dealerHand = new Hand(dealerCards);
-        if (ProcessHand.isBlackjack(dealerHand)) {
-            result = MESSAGE_LOST;
-            hasNewInfo = true;
-            return result;
-        }
-
-        /** Situations where we have to compare the values */
-        int dealerValue = ProcessHand.calculateValue(dealerHand);
-
-        /** Calculate and determine win/loss for each hand of the player */
-        int handNum = 1;
-        for (int i = 0; i <playerHands.size(); i++) {
-            if (player.getBids().get(i) != 0) {
-                int playerValue = ProcessHand.calculateValue(playerHands.get(i));
-
-                result += "Hand " + handNum + ": ";
-                // Determining win/loss of current hand
-                if (playerValue > dealerValue || ProcessHand.isMoreThan21(dealerHand)) {
-                    result += MESSAGE_WON;
-                    player.increaseBalance(player.getBids().get(i));
-                } else if (dealerValue > playerValue) {
-                    result += MESSAGE_LOST;
-                    player.decreaseBalance(player.getBids().get(i));
-                } else {
-                    result += MESSAGE_TIE;
-                }
-                result += "\n";
-                player.clearBid(i);
-                hasNewInfo = true;
-            }
-            handNum++;
-        }
-        return result;
-    }
 }
