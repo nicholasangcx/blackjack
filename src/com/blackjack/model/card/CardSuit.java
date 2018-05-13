@@ -1,5 +1,8 @@
 package com.blackjack.model.card;
 
+/**
+ * Enumerations for the suits of a card in a regular deck.
+ */
 public enum CardSuit {
     CLUBS("C"),
     HEARTS("H"),

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.blackjack.model.Hand;
 
 /**
- * Represents the dealer in the game of Blackjack
+ * Represents the dealer in a game of Blackjack
  */
 public class Dealer extends Gambler {
 

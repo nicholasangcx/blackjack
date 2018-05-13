@@ -63,6 +63,12 @@ public class GameState {
         dealerCards += card.getFace().face() + card.getSuit().suit() + " " + CARD_HIDDEN;
     }
 
+    /**
+     * Takes in the data of the players as a String. Only called at the start of the game
+     * after dealing the initial round of cards, as the String is formed in consecutive order
+     * of the players.
+     * @param player
+     */
     private void updatePlayer(Player player) {
         ArrayList<Hand> hands = player.getHands();
         ArrayList<Integer> bids = player.getBids();
@@ -88,6 +94,12 @@ public class GameState {
 
     }
 
+    /**
+     * Overloaded method that allow the data of a specific player at the table to be updated
+     * and converted to String.
+     * @param player the player whose data to be collected.
+     * @param playerNum the position of this player at the table.
+     */
     public void updatePlayer(Player player, int playerNum) {
         ArrayList<Hand> hands = player.getHands();
         ArrayList<Integer> bids = player.getBids();

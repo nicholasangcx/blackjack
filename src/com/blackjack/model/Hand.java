@@ -35,6 +35,10 @@ public class Hand {
         return hand.remove(0);
     }
 
+    /**
+     * Gets the size of the hand.
+     * @return the number of cards in the hand.
+     */
     public int getSize() {
         return hand.size();
     }

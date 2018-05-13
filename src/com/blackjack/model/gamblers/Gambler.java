@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import com.blackjack.model.Hand;
 import com.blackjack.model.card.Card;
 
+/**
+ * Abstract class that implements some common methods that everyone seated
+ * at a Blackjack table would require.
+ */
 public abstract class Gambler {
 
     private ArrayList<Hand> hands;

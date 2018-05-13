@@ -2,6 +2,10 @@ package com.blackjack.logic;
 
 import com.blackjack.model.card.Card;
 
+/**
+ * Logic that converts the cards used into the relevant value/point system of
+ * a blackjack game
+ */
 public class GameLogic {
 
     public static int cardValue(Card card) {

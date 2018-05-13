@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import com.blackjack.model.Hand;
 import com.blackjack.model.gamblers.Player;
 
 /**

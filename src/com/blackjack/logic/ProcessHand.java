@@ -4,6 +4,10 @@ import com.blackjack.model.Hand;
 import com.blackjack.model.card.Card;
 import com.blackjack.model.card.CardFace;
 
+/**
+ * Class that contains the logic used to process the cards in a specific hand,
+ * to determine the type of hand it is, in the context of Blackjack.
+ */
 public class ProcessHand {
 
     private static final int STARTING_HAND_SIZE = 2;
@@ -12,6 +16,7 @@ public class ProcessHand {
     private static final int DIFF_ACE_VALUE = 10;
 
     /**
+     * @param hand is the hand to be processed.
      * @return true if this hand is a starting hand
      */
     public static boolean isStartingHand(Hand hand) {
@@ -20,6 +25,7 @@ public class ProcessHand {
 
     /**
      * Called only on starting hands.
+     * @param hand is the hand to be processed.
      * @return true if this is a Blackjack hand
      */
     public static boolean isBlackjack(Hand hand) {
@@ -34,6 +40,7 @@ public class ProcessHand {
 
     /**
      * Called only on starting hands.
+     * @param hand is the hand to be processed.
      * @return true if both cards have the same value
      */
     public static boolean isEqualRank(Hand hand) {
@@ -46,18 +53,30 @@ public class ProcessHand {
     }
 
     /**
-     * @return true if the sum of all the card values is equal to or less than 21.
+     * Called on any hand.
+     * @param hand is the hand to be processed.
+     * @return true if the sum of all the card values is less than 21.
      */
     public static boolean isLessThan21(Hand hand) {
         int totalValue = calculateValue(hand);
         return totalValue < MAXIMUM_POINTS;
     }
 
+    /**
+     * Called on any hand.
+     * @param hand is the hand to be processed.
+     * @return true if the sum of all the card values is equal to 21.
+     */
     public static boolean isExactly21(Hand hand) {
         int totalValue = calculateValue(hand);
         return totalValue == MAXIMUM_POINTS;
     }
 
+    /**
+     * Called on any hand.
+     * @param hand is the hand to be processed.
+     * @return true if the sum of all the card values is greater than 21.
+     */
     public static boolean isMoreThan21(Hand hand) {
         int totalValue = calculateValue(hand);
         return totalValue > MAXIMUM_POINTS;
@@ -71,6 +90,11 @@ public class ProcessHand {
         return totalValue < DEALER_MIN;
     }
 
+    /**
+     * Method to calculate value of a hand.
+     * @param hand is the hand to be processed.
+     * @return the sum of the value of all the cards within this hand.
+     */
     public static int calculateValue(Hand hand) {
         int totalValue = 0;
         boolean containsAce = false;

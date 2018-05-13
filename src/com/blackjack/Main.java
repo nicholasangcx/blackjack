@@ -60,6 +60,9 @@ public class Main {
         return logic.processGame();
     }
 
+    /**
+     * Queries the user and adds the number of specified players into the game.
+     */
     private void addPlayers() {
         boolean isNotValid;
         do {
